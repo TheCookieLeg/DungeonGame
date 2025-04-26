@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,6 +12,13 @@ public class PlayerMovement : MonoBehaviour
     private float verticalInput;
     private Vector3 moveDirection;
     
+    [Header("Jump")]
+    [SerializeField] private float jumpForce = 20.0f;
+
+    [SerializeField] private bool readyToJump;
+
+    [SerializeField] private float jumpCooldown = 0.25f;
+    
     private Rigidbody rb;
 
     [Header("Ground Check")] 
@@ -21,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        readyToJump = true;
     }
 
     void Update()
@@ -40,6 +50,11 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
+
+        if (Input.GetKey(KeyCode.Space) && readyToJump && grounded)
+        {
+            Jump();
+        }
     }
 
     private void MovePlayer()
@@ -48,5 +63,18 @@ public class PlayerMovement : MonoBehaviour
 
         //rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Acceleration);
         rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
+    }
+
+    private void Jump()
+    {
+        readyToJump = false;
+        StartCoroutine(JumpCooldown());
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    IEnumerator JumpCooldown()
+    {
+        yield return new WaitForSeconds(jumpCooldown);
+        readyToJump = true;
     }
 }
