@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        moveDirection = (orientation.forward * verticalInput + orientation.right * horizontalInput).normalized;
 
         //rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Acceleration);
         rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
